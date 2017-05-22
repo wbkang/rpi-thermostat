@@ -21,7 +21,10 @@ class Sampler:
 
     def _run(self, *args):
         def pipe_stuff():
-            self.receiver(self.sampler())
+            try:
+                self.receiver(self.sampler())
+            except:
+                logger.exception("Exception while sampling")
         repeat_job(self.sample_interval, pipe_stuff)
 
 
@@ -32,8 +35,12 @@ def repeat_job(period, fun):
         fun()
         sleep_until = start_time + period
         sleep_time = sleep_until - time.monotonic()
+        if sleep_time <= 0:
+            logger.warn("fun took too long. we are behind %2.fs" % abs(sleep_time))
+            sleep_until = start_time + \
+                    ((time.monotonic() - start_time) // period) * period + \
+                    period
+            sleep_time = sleep_until - time.monotonic()
         if sleep_time > 0:
             time.sleep(sleep_time)
-        else:
-            logger.warn("fun took too long! we are behind %.2fs" % sleep_time)
         start_time = sleep_until

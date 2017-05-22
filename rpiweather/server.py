@@ -7,21 +7,81 @@ import threading
 import logging
 import pandas as pd
 import numpy as np
-
-
+from tzlocal import get_localzone
+from flask import Flask, render_template, url_for
+from rpiweather import temphumid
+from rpiweather import temppressure 
+from rpiweather import data
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(threadName)s - %(name)s - %(levelname)s - %(message)s')
 GPIO.setmode(GPIO.BCM)
-
 logger = logging.getLogger(__name__)
 
 
-from rpiweather import temphumid
-from rpiweather import temppressure 
-
+data.init("/home/pi/weather.db")
 temppressure.start_recording()
 temphumid.start_recording()
+
+app = Flask("rpiweather")
+
+def format_timestamps(series):
+    local_tz = get_localzone()
+    return list(
+        str(dt.tz_localize("UTC").tz_convert(local_tz)) for dt in series
+    )
+
+
+@app.route("/")
+def index():
+    bigarray = data.get_recent_datapoints()
+    df = pd.DataFrame(bigarray, columns=['time', 'type', 'value'])
+    df['time'] = pd.to_datetime(df['time'])
+    df = df.set_index('time')
+    df2 = df.pivot(columns='type', values='value').resample("15T").mean()
+    
+    temp_df = df2['temperature'].dropna()
+    temp_values = {
+        'x': format_timestamps(temp_df.index),
+        'y': list(temp_df),
+        'name': 'Temperature',
+        'type': 'line',
+        'line': {
+            'color': 'rgb(244, 66, 98)'
+        }
+    }
+    
+    pres_df = df2['pressure'].dropna()
+    pressure_values = {
+        'x': format_timestamps(pres_df.index),
+        'y': list(pres_df),
+        'name': 'Pressure',
+        'type': 'line',
+        'yaxis': 'y2',
+        'line': {
+            'dash': 'dot',
+            'color': 'rgb(151,138,155)'
+        }
+    }
+    hum_df = df2['humidity'].dropna()
+    humidity_values = {
+        'x': format_timestamps(hum_df.index),
+        'y': list(hum_df),
+        'name': 'Humidity',
+        'type': 'scatter',
+        'fill': 'tozeroy',
+        'yaxis': 'y3',
+        'marker': {
+            'color': 'rgb(66,131,244)'
+        }
+    }
+    chart_data = [
+        temp_values, pressure_values, humidity_values
+    ]
+
+    #import pdb; pdb.set_trace()
+    return render_template("index.html", weather_data=chart_data)
+
 
 def make_agg_df(rec):
     df = pd.DataFrame.from_records(rec, index="time")
@@ -35,6 +95,24 @@ def magic():
     total_view = pd.concat([df_tp, df_th], axis=1)
     return total_view
 
-import IPython
-IPython.embed()
+#import IPython
+#IPython.embed()
+if False:
+    bigarray = data.get_recent_datapoints()
+    df = pd.DataFrame(bigarray, columns=['time', 'type', 'value'])
+    df['time'] = pd.to_datetime(df['time'])
+    df = df.set_index('time')
+    df2 = df.pivot(columns='type', values='value').resample("5T").mean()
 
+    temp_values = list(zip(
+        (dt.timestamp() for dt in df2.index),
+        df2['temperature']
+    ))
+    pressure_values = list(zip(
+        (dt.timestamp() for dt in df2.index),
+        df2['pressure']
+    ))
+    humidity_values = list(zip(
+        (dt.timestamp() for dt in df2.index),
+        df2['humidity']
+    ))

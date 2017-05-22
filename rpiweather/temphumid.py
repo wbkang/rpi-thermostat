@@ -2,22 +2,18 @@ from dht11 import dht11
 import logging
 import threading
 from rpiweather.sampler import Sampler
+from rpiweather.data import insert_data
 from collections import deque
 import time
+import datetime
+import pytz
 
 PIN_DHT = 4
-SAMPLE_INTERVAL = 1
+SAMPLE_INTERVAL = 30
 
 logger = logging.getLogger(__name__)
 
 temp_sensor = dht11.DHT11(pin=PIN_DHT)
-data = deque(maxlen=24 * 60 * 60)
-data_lock = threading.Lock()
-
-
-def get_records():
-    with data_lock:
-        return list(data)
 
 
 def measure():
@@ -25,12 +21,12 @@ def measure():
 
 
 def accept_record(record):
-    with data_lock:
-        if record.is_valid():
-            logger.debug("Record: temp_avg:%r hum_avg:%r" %
-                         (record.temperature, record.humidity))
-            data.append({'time': time.time(), 'temp': record.temperature,
-                         'humidity': record.humidity})
+    if record.is_valid():
+        logger.debug("Record: temp_avg:%r hum_avg:%r" %
+                     (record.temperature, record.humidity))
+        now = datetime.datetime.now(pytz.utc)
+        insert_data(now, "temperature", record.temperature)
+        insert_data(now, "humidity", record.humidity)
 
 
 sampler = Sampler(SAMPLE_INTERVAL, measure, accept_record)

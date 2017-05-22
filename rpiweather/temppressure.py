@@ -7,9 +7,11 @@ import logging
 import threading
 from collections import deque
 from rpiweather.sampler import Sampler
+from rpiweather.data import insert_data
+import rpiweather.data
+import datetime
+import pytz
 
-data = deque(maxlen=24 * 60 * 60)
-data_lock = threading.Lock()
 logger = logging.getLogger(__name__)
 
 
@@ -18,16 +20,10 @@ bus = smbus.SMBus(1)
 
 addr = 0x60
 
-
-def get_records():
-    with data_lock:
-        return list(data)
-
-
 def accept_record(record):
-    with data_lock:
-        data.append({'time': time.time(), 'temp': record['temperature'], 'pressure': record['pressure']})
-
+    now = datetime.datetime.now(pytz.utc)
+    insert_data(now, "temperature2", record['temperature'])
+    insert_data(now, "pressure", record['pressure'])
 
 def read():
     """

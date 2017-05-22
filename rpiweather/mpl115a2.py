@@ -13,7 +13,7 @@ data_lock = threading.Lock()
 logger = logging.getLogger(__name__)
 
 
-SAMPLE_INTERVAL = 1
+SAMPLE_INTERVAL = 30
 bus = smbus.SMBus(1)
 
 addr = 0x60

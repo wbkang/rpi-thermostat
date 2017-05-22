@@ -2,5 +2,7 @@ RPi.GPIO
 pyowm
 Adafruit_MCP3008
 luma.led_matrix
-ipython
 git+https://github.com/adafruit/Adafruit_Python_GPIO.git@060f6d6782768b1f6a4713f369db2740e79ec61e
+pandas
+ipython
+autopep8

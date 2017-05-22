@@ -1,0 +1,42 @@
+GPIO
+2 - Barometric - SDA
+3 - Barometric - SCL
+4 - DHT11 - In/Out
+17 - DUST LED 3
+? - RAIN LED
+?,?,? - TEMPERATURE LED
+7 - LED
+8 - LED
+9 - LED
+10 - LED
+11 - LED
+18 - MCP3008 CLK
+23 - MCP3008 DOUT
+24 - MCP3008 DIN
+25 - MCP3008 CS
+
+3.3v
+- Barometric VDD
+- DHT11 VDD
+- MCP3008 VDD
+- MCP3008 VREF
+- DUST VLED
+- DUST VCC
+
+GND/3v
+- Barometric GND
+- DHT11 GND
+- MCP3008 AGND
+- MCP3008 DGND
+- DUST LED-GND
+
+
+
+5v
+- LED
+
+
+GND/5v
+- LED
+
+

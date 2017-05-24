@@ -9,7 +9,7 @@ import datetime
 import pytz
 
 PIN_DHT = 4
-SAMPLE_INTERVAL = 30
+SAMPLE_INTERVAL = 30 
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,8 @@ def measure():
     return temp_sensor.read()
 
 
-def accept_record(record):
+def sample():
+    record = measure()
     if record.is_valid():
         logger.debug("Record: temp_avg:%r hum_avg:%r" %
                      (record.temperature, record.humidity))
@@ -29,7 +30,7 @@ def accept_record(record):
         insert_data(now, "humidity", record.humidity)
 
 
-sampler = Sampler(SAMPLE_INTERVAL, measure, accept_record)
+sampler = Sampler(SAMPLE_INTERVAL, sample)
 
 
 def start_recording():

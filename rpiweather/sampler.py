@@ -6,11 +6,10 @@ logger = logging.getLogger(__name__)
 
 
 class Sampler:
-    def __init__(self, sample_interval, sampler, receiver):
+    def __init__(self, sample_interval, sampler):
         "Sampler(sample_interval, sampler, receiver)"
         self.sample_interval = sample_interval
         self.sampler = sampler
-        self.receiver = receiver
         self.thread = None
 
     def start(self):
@@ -22,7 +21,7 @@ class Sampler:
     def _run(self, *args):
         def pipe_stuff():
             try:
-                self.receiver(self.sampler())
+                self.sampler()
             except:
                 logger.exception("Exception while sampling")
         repeat_job(self.sample_interval, pipe_stuff)

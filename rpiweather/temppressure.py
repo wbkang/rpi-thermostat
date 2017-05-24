@@ -15,15 +15,11 @@ import pytz
 logger = logging.getLogger(__name__)
 
 
-SAMPLE_INTERVAL = 1
+SAMPLE_INTERVAL = 30
 bus = smbus.SMBus(1)
 
 addr = 0x60
 
-def accept_record(record):
-    now = datetime.datetime.now(pytz.utc)
-    insert_data(now, "temperature2", record['temperature'])
-    insert_data(now, "pressure", record['pressure'])
 
 def read():
     """
@@ -91,10 +87,18 @@ def read():
 
     temp = 25.0 - (rawtemp - 498.0) / 5.35
     logger.debug("Temp = %3.2f" % temp)
-
+    
+    # add 1.63kPa based on the comparison with official data
+    pkpa += 1.63
     return {'temperature': temp, 'pressure': pkpa}
 
-sampler = Sampler(SAMPLE_INTERVAL, read, accept_record)
+def sample():
+    record = read()
+    now = datetime.datetime.now(pytz.utc)
+    insert_data(now, "temperature2", record['temperature'])
+    insert_data(now, "pressure", record['pressure'])
+
+sampler = Sampler(SAMPLE_INTERVAL, sample)
 
 def start_recording():
     logger.info("Start sampling")

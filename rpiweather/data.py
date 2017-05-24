@@ -2,8 +2,9 @@ from threading import Lock
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, asc, desc
 from sqlalchemy.sql import select
 from sqlalchemy.types import TIMESTAMP, Float
+import logging
 
-
+logger = logging.getLogger(__name__)
 metadata = MetaData()
 
 meteo_table = Table('meteo', metadata,
@@ -23,6 +24,7 @@ def init(db_path):
 def insert_data(dt, type_, value):
     with data_lock:
         with engine.connect() as conn:
+            logger.debug("Inserting data (%s, %s, %s)" % (dt, type_, value))
             ins = meteo_table.insert().values(time=dt, type=type_, value=value)
             conn.execute(ins)
 

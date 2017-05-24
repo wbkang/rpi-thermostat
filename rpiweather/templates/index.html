@@ -21,25 +21,35 @@ var layout = {
     title: "Weather chart",
     xaxis: {
         type: "date",
-        tickformat: "%x %X %Z"
+        tickformat: "%x %I:%M%p",
     },
     yaxis: {
         title: 'Temperature',
-        range: [0, 35]
+        hoverformat: ".0f"
     },
     yaxis2: {
-        title: '',
+        title: 'Pressure',
         overlaying: 'y',
         side: 'right',
-        range: [85, 110],
-        showticklables: false,
-        visible: false
+        range: [95, 102],
+        showticklabels: false,
+        visible: false,
+        hoverformat: ".2f"
     },
     yaxis3: {
         title: 'Humidity (%)',
         side: 'right',
         overlaying: 'y',
-        range: [0, 100]
+        range: [0, 100],
+        hoverformat: ".0f"
+    },
+    yaxis4: {
+        title: 'Dust Level (%)',
+        side: 'right',
+        overlaying: 'y',
+        visible: false,
+        range: [10, 70],
+        hoverformat: ".0f"
     }
 };
 Plotly.newPlot("chart", weatherData, layout)

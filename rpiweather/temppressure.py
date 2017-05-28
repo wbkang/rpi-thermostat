@@ -8,6 +8,7 @@ import threading
 from collections import deque
 from rpiweather.sampler import Sampler
 from rpiweather.data import insert_data
+from rpiweather import config
 import rpiweather.data
 import datetime
 import pytz
@@ -15,11 +16,14 @@ import pytz
 logger = logging.getLogger(__name__)
 
 
-SAMPLE_INTERVAL = 30
+SAMPLE_INTERVAL = config.temppressure['sample_interval']
 bus = smbus.SMBus(1)
 
 addr = 0x60
 
+def configure(sample_interval):
+    global SAMPLE_INTERVAL
+    SAMPLE_INTERVAL = sample_interval
 
 def read():
     """

@@ -7,9 +7,10 @@ from collections import deque
 import time
 import datetime
 import pytz
+from rpiweather import config
 
-PIN_DHT = 4
-SAMPLE_INTERVAL = 30 
+PIN_DHT = config.temphumid['dht11']['pin'] 
+SAMPLE_INTERVAL = config.temphumid['sample_interval']
 
 logger = logging.getLogger(__name__)
 

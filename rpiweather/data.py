@@ -2,6 +2,7 @@ from threading import Lock
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, asc, desc
 from sqlalchemy.sql import select
 from sqlalchemy.types import TIMESTAMP, Float
+from rpiweather import config
 import logging
 
 logger = logging.getLogger(__name__)
@@ -16,9 +17,10 @@ data_lock = Lock()
 
 engine = None
 
-def init(db_path):
+def init():
     global engine
-    engine = create_engine('sqlite:///' + db_path, echo=False)
+    db_path = config.data['conn_string']
+    engine = create_engine(db_path, echo=False)
     metadata.create_all(engine)
 
 def insert_data(dt, type_, value):

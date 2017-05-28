@@ -1,20 +1,22 @@
 import logging
 from rpiweather.sampler import Sampler
 from rpiweather.data import insert_data
+from rpiweather import config
 import datetime
 import pytz
 import Adafruit_MCP3008
 from RPi import GPIO
 import time
 
-CLK = 18
-MISO = 23
-MOSI = 24
-CS = 25
+mcp3008_config = config.dust['mcp3008']
+CLK = mcp3008_config['clk']
+MISO = mcp3008_config['miso']
+MOSI = mcp3008_config['mosi']
+CS = mcp3008_config['cs']
 
-LED = 17
+LED = mcp3008_config['led']
 
-SAMPLE_INTERVAL = 30 
+SAMPLE_INTERVAL = config.dust['sample_interval']
 
 GPIO.setup(LED, GPIO.OUT)
 logger = logging.getLogger(__name__)

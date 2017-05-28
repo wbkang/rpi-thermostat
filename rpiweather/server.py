@@ -20,7 +20,6 @@ from rpiweather import data
 from rpiweather import outside_weather
 from rpiweather import dust
 
-data.init()
 temppressure.start_recording()
 temphumid.start_recording()
 outside_weather.start_recording()

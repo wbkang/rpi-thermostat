@@ -7,5 +7,7 @@ pandas
 pytz
 matplotlib
 tzlocal
+pyyaml
+alembic
 ipython
 autopep8

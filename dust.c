@@ -76,6 +76,7 @@ read_dust(PyObject *self, PyObject *args) {
     digitalWrite(cs, LOW);
     spi_delay();
     delayMicroseconds(dust_sensor_delay);
+    // read mcp3008 bit-bang style
     part1 = SPI_transfer_byte(info, (3 << 6) | ((adc & 0x7) << 3));
     part2 = SPI_transfer_byte(info, 0);
     part3 = SPI_transfer_byte(info, 0);

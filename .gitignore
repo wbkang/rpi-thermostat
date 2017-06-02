@@ -1,4 +1,11 @@
 *.swp
 *.pyc
+*.so
 venv/
 Session.vim
+build/
+.eggs/
+tags
+TAGS
+*.egg
+*.egg-info

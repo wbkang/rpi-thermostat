@@ -35,10 +35,13 @@ def insert_data(dt, type_, value):
 
 
 
-def get_recent_datapoints():
+def get_recent_datapoints(lookbehind):
+    from_time = datetime.datetime.now(pytz.utc).\
+            replace(hour=0, minute=0, second=0, microsecond=0) - datetime.timedelta(hours=lookbehind)
     with data_lock:
         with engine.connect() as conn:
             sel = select([meteo_table.c.time, meteo_table.c.type, meteo_table.c.value]).\
+                    where(meteo_table.c.time > from_time).\
                     order_by(asc("time"))
             return list(conn.execute(sel))
 

@@ -7,7 +7,7 @@ import logging
 import pandas as pd
 import numpy as np
 from tzlocal import get_localzone
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(threadName)s - %(name)s - %(levelname)s - %(message)s')
@@ -37,7 +37,9 @@ def format_timestamps(series):
 
 @app.route("/")
 def index():
-    bigarray = data.get_recent_datapoints()
+    lookbehind = int(request.form.get('lookbehind', 24))
+
+    bigarray = data.get_recent_datapoints(lookbehind)
     logger.info("Total datapoint count: %d" % len(bigarray))
     df = pd.DataFrame(bigarray, columns=['time', 'type', 'value'])
     df['time'] = pd.to_datetime(df['time'])
@@ -109,7 +111,13 @@ def index():
     ]
 
     #import pdb; pdb.set_trace()
-    return render_template("index.html", weather_data=chart_data)
+    lookbehind_options = [(24, "1d"),
+               (24*7, "1w"),
+               (24*7*30, "30d")]
+    return render_template("index.html",
+                           weather_data=chart_data,
+                           lookbehind_options=lookbehind_options,
+                           lookbehind=lookbehind)
 
 
 def make_agg_df(rec):

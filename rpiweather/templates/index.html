@@ -13,6 +13,16 @@
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     </head>
     <body>
+        <form action="/" method="GET">
+            <select name="lookbehind" onchange="this.form.submit()">
+                {% for (val, caption) in lookbehind_options %}
+                <option 
+                    {% if val == lookbehind %}selected{% endif %}
+                    value={{val}}
+                    >{{caption}}</option>
+                {% endfor %}
+            </select>
+        </form>
         <div id="chart" >
         </div>
         <script type="text/javascript">
@@ -48,7 +58,6 @@ var layout = {
         side: 'right',
         overlaying: 'y',
         visible: false,
-        range: [10, 70],
         hoverformat: ".0f"
     }
 };

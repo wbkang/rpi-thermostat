@@ -37,7 +37,7 @@ def format_timestamps(series):
 
 @app.route("/")
 def index():
-    lookbehind = int(request.form.get('lookbehind', 24))
+    lookbehind = int(request.args.get('lookbehind', 24))
 
     bigarray = data.get_recent_datapoints(lookbehind)
     logger.info("Total datapoint count: %d" % len(bigarray))

@@ -44,7 +44,8 @@ def index():
     df = pd.DataFrame(bigarray, columns=['time', 'type', 'value'])
     df['time'] = pd.to_datetime(df['time'])
     df = df.set_index('time')
-    df2 = df.pivot(columns='type', values='value').resample("15T").mean()
+    agg_interval = "15T" if lookbehind < 168 else "1H" if lookbehind < 5040 else "1D"
+    df2 = df.pivot(columns='type', values='value').resample(agg_interval).mean()
 
     temp_df = df2['temperature'].dropna()
     temp_values = {

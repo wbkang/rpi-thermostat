@@ -48,6 +48,7 @@ static uint8_t SPI_transfer_byte(spi_info info, uint8_t byte_out)
     return byte_in;
 }
 
+// Read from Sharp GP2Y1010 dust sensor via MCP3008 dust sensor
 static PyObject *
 read_dust(PyObject *self, PyObject *args) {
     unsigned int adc;

@@ -11,9 +11,11 @@ from rpithermostat import sampler
 import Adafruit_CharLCD as LCD
 from collections import deque
 from functools import reduce
+import datetime
 
 lock_temphumids = Lock()
 temphumids = deque([], maxlen=30)
+status_message = ""
 
 
 logging.basicConfig(level=logging.INFO,
@@ -42,8 +44,8 @@ from dht11 import dht11
 temp_humid = dht11.DHT11(26)
 
 pin_heat = 16
-pin_fan = 20
-pin_cooling = 21
+pin_fan = 21
+pin_cooling = 20
 for pin in [pin_heat, pin_fan, pin_cooling]:
     GPIO.setup(pin, GPIO.OUT)
 
@@ -92,28 +94,50 @@ record_temp()
 measure_thread = sampler.Sampler(1, record_temp)
 measure_thread.start()
 
-
-def get_target_temperature():
-    return 26
-
-def temp_manager():
+def display():
     target_temp = get_target_temperature()
     current = get_current_temphumid()
     current_temp = current['temperature']
     current_humidity = current['humidity']
-    logger.info("Current temperature: %d, Target: %d" % (current_temp, target_temp))
     
     lcd.clear()
+    lcd.show_cursor(True)
+    lcd.blink(True)
+    lcd.message("%dC @ %d%% -> %dC\n%s" % (current_temp, current_humidity, target_temp, status_message))
 
-    status_message = ""
+display_thread = sampler.Sampler(1, display)
+display_thread.start()
+
+def is_night():
+    dt = datetime.datetime.now()
+    return not (dt.hour >= 8 and dt.hour < 22)
+
+def get_target_temperature():
+    dt = datetime.datetime.now()
+    return 25 if not is_night() else 27
+
+def temp_manager():
+    global status_message
+    target_temp = get_target_temperature()
+    current = get_current_temphumid()
+    current_temp = current['temperature']
+    current_humidity = current['humidity']
+    target_humidity = 40
+    logger.info("Current temperature: %d, Target: %d" % (current_temp, target_temp))
     
-    if abs(current_temp - target_temp) < 1:
+    if current_temp >= target_temp or (not is_night() and current_humidity >= target_humidity ):
+        logger.info("Too hot! Start cooling")
+        fan(True)
+        heat(False)
+        cooling(True)
+        status_message = "Cooling"
+    elif abs(current_temp - target_temp) < 1:
         logger.info("Temp difference minimal, stop")
-        fan(False)
+        fan(True)
         heat(False)
         cooling(False)
         status_message = "Idle"
-    elif current_temp > target_temp:
+    elif current_temp >= target_temp:
         logger.info("Too hot! Start cooling")
         fan(True)
         heat(False)
@@ -121,14 +145,17 @@ def temp_manager():
         status_message = "Cooling"
     else:
         logger.info("Too cold! Idling")
-        fan(False)
+        fan(True)
         heat(False)
         cooling(False)
         status_message = "Idle"
 
-    lcd.message("%dC @ %d%% -> %dC\n%s" % (current_temp, current_humidity, target_temp, status_message))
 
 
 
 temp_thread = sampler.Sampler(30, temp_manager)
 temp_thread.start()
+
+logger.info("Started")
+while True:
+    time.sleep(1)

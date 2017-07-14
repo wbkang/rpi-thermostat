@@ -7,7 +7,7 @@ Type=simple
 User=pi
 Group=pi
 WorkingDirectory=/home/pi/src/rpi-repo
-ExecStart=/bin/bash -c "./venv/bin/python -m rpithermostat.server"
+ExecStart=/bin/bash -c "OWM_API_KEY=$(cat /home/pi/.owm_api_key) FLASK_APP=rpithermostat.server ./venv/bin/flask run --with-threads -h 0.0.0.0"
 StandardOutput=syslog
 StandardError=syslog
 

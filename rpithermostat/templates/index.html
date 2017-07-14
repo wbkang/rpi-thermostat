@@ -1,67 +1,55 @@
 <!doctype html>
 <html>
     <head>
-        <title>rpiweather</title>
-        <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
-        <script type="text/javascript" src="{{url_for('static', filename='nv.d3.min.js')}}"></script>
-        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='nv.d3.css')}}"></link>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>rpithermostat</title>
+        <script
+                          src="https://code.jquery.com/jquery-3.2.1.min.js"
+                                          integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+                                                            crossorigin="anonymous"></script>
+
         <style type="text/css">
-            .chart svg {
-                height: 500px;
+            .buttons > button{
+               width: 300px; 
+               height: 2em;
+               margin: 10px;
             }
         </style>
-        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     </head>
     <body>
-        <form action="/" method="GET">
-            <select name="lookbehind" onchange="this.form.submit()">
-                {% for (val, caption) in lookbehind_options %}
-                <option 
-                    {% if val == lookbehind %}selected{% endif %}
-                    value={{val}}
-                    >{{caption}}</option>
-                {% endfor %}
-            </select>
-        </form>
-        <div id="chart" >
+        <h1>
+            Thermostat
+        </h1>
+        <p>
+            Current temp: {{temperature|round(1)}}C
+        <p>
+            Current humidity: {{humidity|round(1)}}%
+        <p>
+            Target: {{target_temp}}C
+        <div class="buttons">
+            <button onclick="javascript:too_cold()">Too cold!</button>
+            <br>
+            <button onclick="javascript:happy()">Happy</button>
+            <br>
+            <button onclick="javascript:too_hot()">Too hot!</button>
+            <br>
         </div>
         <script type="text/javascript">
-var weatherData = {{weather_data|tojson|safe}};
-var layout = {
-    title: "Weather chart",
-    xaxis: {
-        type: "date",
-        tickformat: "%x %I:%M%p",
-    },
-    yaxis: {
-        title: 'Temperature',
-        hoverformat: ".0f"
-    },
-    yaxis2: {
-        title: 'Pressure',
-        overlaying: 'y',
-        side: 'right',
-        range: [95, 102],
-        showticklabels: false,
-        visible: false,
-        hoverformat: ".2f"
-    },
-    yaxis3: {
-        title: 'Humidity (%)',
-        side: 'right',
-        overlaying: 'y',
-        range: [0, 100],
-        hoverformat: ".0f"
-    },
-    yaxis4: {
-        title: 'Dust Level (%)',
-        side: 'right',
-        overlaying: 'y',
-        visible: false,
-        hoverformat: ".0f"
-    }
-};
-Plotly.newPlot("chart", weatherData, layout)
+            function too_cold() {
+                $.post("/feeling/too_cold", null, function() {
+                    window.location.reload(true);
+                });
+            }
+            function too_hot() {
+                $.post("/feeling/too_hot", null, function() {
+                    window.location.reload(true);
+                });
+            }
+            function happy() {
+                $.post("/feeling/happy", null, function() {
+                    window.location.reload(true);
+                });
+            }
         </script>
     </body>
 </html>

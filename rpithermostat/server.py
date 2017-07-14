@@ -42,21 +42,28 @@ def index():
                            humidity=th['humidity'],
                            target_temp=target)
 
-
-@app.route("/feeling/too_cold", methods=["POST"])
-def too_cold():
-    collector.record_reaction(-1)
+@app.route("/temperature/up", methods=["POST"])
+def temp_up():
     t = oracle.get_target_temperature()
     oracle.set_target_temperature(t + 1)
     controller.temp_manager()
     return ""
 
-@app.route("/feeling/too_hot", methods=["POST"])
-def too_hot():
-    collector.record_reaction(1)
+@app.route("/temperature/down", methods=["POST"])
+def temp_down():
     t = oracle.get_target_temperature()
     oracle.set_target_temperature(t - 1)
     controller.temp_manager()
+    return ""
+
+@app.route("/feeling/too_cold", methods=["POST"])
+def too_cold():
+    collector.record_reaction(-1)
+    return ""
+
+@app.route("/feeling/too_hot", methods=["POST"])
+def too_hot():
+    collector.record_reaction(1)
     return ""
 
 @app.route("/feeling/happy", methods=["POST"])

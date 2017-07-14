@@ -9,10 +9,27 @@
                                                             crossorigin="anonymous"></script>
 
         <style type="text/css">
-            .buttons > button{
-               width: 300px; 
+            body{
+                font-family: sans-serif;
+               box-sizing: border-box;
+            }
+            .controller> button,.feeling > button{
                height: 2em;
+               width: 300px;
+               float:left;
                margin: 10px;
+            }
+            .controller {
+                border: 5px dashed red;
+                margin: 10px;
+                padding: 5px;
+                overflow: auto;
+            }
+            .feeling {
+                border: 5px dashed grey;
+                margin: 10px;
+                padding: 5px;
+                overflow: auto;
             }
         </style>
     </head>
@@ -26,15 +43,26 @@
             Current humidity: {{humidity|round(1)}}%
         <p>
             Target: {{target_temp}}C
-        <div class="buttons">
+        <div class="feeling">
             <button onclick="javascript:too_cold()">Too cold!</button>
-            <br>
             <button onclick="javascript:happy()">Happy</button>
-            <br>
             <button onclick="javascript:too_hot()">Too hot!</button>
-            <br>
+        </div>
+        <div class="controller">
+            <button onclick="javascript:temp_up()">Temp UP!</button>
+            <button onclick="javascript:temp_down()">Temp DOWN!</button>
         </div>
         <script type="text/javascript">
+            function temp_down() {
+                $.post("/temperature/down", null, function() {
+                    window.location.reload(true);
+                });
+            }
+            function temp_up() {
+                $.post("/temperature/up", null, function() {
+                    window.location.reload(true);
+                });
+            }
             function too_cold() {
                 $.post("/feeling/too_cold", null, function() {
                     window.location.reload(true);

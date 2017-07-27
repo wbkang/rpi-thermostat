@@ -1,0 +1,15 @@
+[Unit]
+Description=checkwifi
+After=syslog.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/src/rpi-repo
+ExecStart=/bin/bash -c "while sleep 60; do ping -c1 8.8.8.8 || sudo systemctl restart network; done"
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target

@@ -4,6 +4,7 @@ from .sampler import Sampler
 import datetime
 import pytz
 import logging
+import time
 
 LOCATION = "Toronto,CA"
 OWM_API_KEY = os.environ['OWM_API_KEY']
@@ -22,7 +23,12 @@ def get_recent_temp():
 
 def get_current_temp():
     logger.debug("Getting the current outside temp")
-    return owm.weather_at_place(LOCATION).get_weather().get_temperature()['temp'] - 273.15
+    try:
+        return owm.weather_at_place(LOCATION).get_weather().get_temperature()['temp'] - 273.15
+    except:
+        logger.exception("Error getting the temperature, retrying")
+        time.sleep(5)
+        return get_current_temp()
 
 
 def sample_current_temp():

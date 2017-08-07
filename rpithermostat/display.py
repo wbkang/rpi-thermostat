@@ -37,7 +37,7 @@ def display():
     lcd.clear()
     lcd.show_cursor(True)
     lcd.blink(True)
-    lcd.message("%.1fC @ %d%% -> %dC\n%s" % (current_temp, current_humidity, target_temp, status_message))
+    lcd.message("%.1fC@%d%%->%dC\n%s" % (current_temp, current_humidity, target_temp, status_message))
 
 display_thread = None
 

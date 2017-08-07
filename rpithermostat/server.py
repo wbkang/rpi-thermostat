@@ -15,6 +15,7 @@ from rpithermostat import oracle
 from rpithermostat import collector 
 from rpithermostat import controller 
 import datetime
+import json
 
 
 logging.basicConfig(level=logging.INFO,
@@ -70,6 +71,33 @@ def too_hot():
 def happy():
     collector.record_reaction(0)
     return ""
+
+@app.route("/status")
+def status():
+    t = oracle.get_target_temperature()
+    th = temphumids.get_current_temphumid()
+    cooling = 2 if oracle.should_cool() else 0
+
+    status = {'targetHeatingCoolingState':3,
+              'targetTemperature':t,
+              'targetRelativeHumidity':th['humidity'],
+              'currentHeadingCoolingState':cooling,
+              'currentTemperature':th['temperature'],
+              'currentRelativeHumidity':th['humidity']
+              }
+
+    return json.dumps(status)
+
+@app.route("/targetTemperature/<temp>")
+def set_target_temp(temp):
+    oracle.set_target_temperature(float(temp))
+    return ""
+
+@app.route("/targetRelativeHumidity/<rh>")
+def set_rh(rh):
+    return ""
+
+
 
 
 temphumids.start_recording()

@@ -28,7 +28,7 @@ def temp_manager():
         display.set_status("Cooling")
     else:
         logger.info("Too cold! Idling")
-        fan(True)
+        fan(False)
         heat(False)
         cooling(False)
         display.set_status("Idle")

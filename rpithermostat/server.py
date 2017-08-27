@@ -75,12 +75,13 @@ def happy():
 @app.route("/status")
 def status():
     t = oracle.get_target_temperature()
+    target_humidity = oracle.get_target_humidity()
     th = temphumids.get_current_temphumid()
-    cooling = 2 if oracle.should_cool() else 0
+    cooling = 2
 
-    status = {'targetHeatingCoolingState':3,
+    status = {'targetHeatingCoolingState':2,
               'targetTemperature':t,
-              'targetRelativeHumidity':th['humidity'],
+              'targetRelativeHumidity':target_humidity,
               'currentHeadingCoolingState':cooling,
               'currentTemperature':th['temperature'],
               'currentRelativeHumidity':th['humidity']
@@ -95,6 +96,7 @@ def set_target_temp(temp):
 
 @app.route("/targetRelativeHumidity/<rh>")
 def set_rh(rh):
+    oracle.set_target_humidity(float(rh))
     return ""
 
 
@@ -102,7 +104,7 @@ def set_rh(rh):
 
 temphumids.start_recording()
 outside_weather.start_recording()
-controller.start()
+oracle.start()
 display.start_display()
 
 logger.info("Started")

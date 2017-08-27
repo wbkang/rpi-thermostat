@@ -5,6 +5,7 @@ config_file = "/home/pi/.thermostat.json"
 
 KEY_TEMP_DAY = "temp.day"
 KEY_TEMP_NIGHT = "temp.night"
+KEY_HUMIDITY = "humidity"
 
 def read_config():
     if os.path.isfile(config_file):

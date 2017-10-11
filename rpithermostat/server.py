@@ -77,12 +77,12 @@ def status():
     t = oracle.get_target_temperature()
     target_humidity = oracle.get_target_humidity()
     th = temphumids.get_current_temphumid()
-    cooling = 2
+    state = oracle.get_governor().hb_num
 
-    status = {'targetHeatingCoolingState':2,
+    status = {'targetHeatingCoolingState':state,
               'targetTemperature':t,
               'targetRelativeHumidity':target_humidity,
-              'currentHeadingCoolingState':cooling,
+              'currentHeadingCoolingState':state,
               'currentTemperature':th['temperature'],
               'currentRelativeHumidity':th['humidity']
               }
@@ -100,7 +100,20 @@ def set_rh(rh):
     return ""
 
 
+@app.route("/off")
+def set_status_off():
+    oracle.set_governor("off")
+    return ""
 
+@app.route("/comfort")
+def set_status_heat():
+    oracle.set_governor("heat")
+    return ""
+
+@app.route("/no-frost")
+def set_status_cool():
+    oracle.set_governor("cool")
+    return ""
 
 temphumids.start_recording()
 outside_weather.start_recording()

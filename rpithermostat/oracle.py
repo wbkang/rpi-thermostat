@@ -4,7 +4,7 @@ import datetime
 import logging
 from rpithermostat import pconfig
 from rpithermostat import sampler
-from rpithermostat.controller import fan, cooling, heat
+from rpithermostat.controller import fan, heatpump, heat
 from rpithermostat import display
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ def off_governor():
     target_humidity = get_target_humidity() 
     heat(False)
     fan(False)
-    cooling(False)
+    heatpump(False)
     display.set_status2("Off")
 off_governor.hb_num = 0
 
@@ -31,17 +31,17 @@ def cool_governor():
     if current_temp >= target_temp:
         heat(False)
         fan(True)
-        cooling(True)
+        heatpump(True)
         display.set_status2("Cooling")
     elif current_humidity >= target_humidity:
         heat(False)
         fan(False)
-        cooling(True)
+        heatpump(True)
         display.set_status2("Dehumidifying")
     else:
         heat(False)
         fan(False)
-        cooling(False)
+        heatpump(False)
         display.set_status2("Idle")
 cool_governor.hb_num = 2 
 
@@ -57,9 +57,9 @@ def heat_governor():
         fan(False)
         display.set_status2("Idle")
     else:
-        heat(True)
+        heat(False)
         fan(True)
-        cooling(False)
+        heatpump(True)
         display.set_status2("Heating")
 heat_governor.hb_num = 1 
 

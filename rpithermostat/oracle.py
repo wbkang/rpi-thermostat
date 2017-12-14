@@ -55,9 +55,10 @@ def heat_governor():
     if current_temp >= target_temp:
         heat(False)
         fan(False)
+        heatpump(False)
         display.set_status2("Idle")
     else:
-        heat(False)
+        heat(True)
         fan(True)
         heatpump(True)
         display.set_status2("Heating")

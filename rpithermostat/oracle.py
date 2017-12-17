@@ -51,16 +51,18 @@ def heat_governor():
     current_temp = current['temperature']
     current_humidity = current['humidity']
     target_humidity = get_target_humidity() 
+    dt = datetime.datetime.now()
+    force_fan_on = (dt.minute >= 0 and dt.minute < 8) or (dt.minute > 30 and dt.minute < 38)
     
     if current_temp >= target_temp:
         heat(False)
-        fan(False)
+        fan(False or force_fan_on)
         heatpump(False)
         display.set_status2("Idle")
     else:
         heat(True)
-        fan(True)
-        heatpump(True)
+        fan(True or force_fan_on)
+        heatpump(False)
         display.set_status2("Heating")
 heat_governor.hb_num = 1 
 

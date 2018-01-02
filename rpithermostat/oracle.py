@@ -53,6 +53,7 @@ def heat_governor():
     target_humidity = get_target_humidity() 
     dt = datetime.datetime.now()
     force_fan_on = (dt.minute >= 0 and dt.minute < 8) or (dt.minute > 30 and dt.minute < 38)
+    force_fan_on = False # for some reason the fan is just hot since Jan 1
     
     if current_temp >= target_temp:
         heat(False)

@@ -61,9 +61,9 @@ def heat_governor():
         heatpump(False)
         display.set_status2("Idle")
     else:
-        heat(True)
+        heat(False)
         fan(True or force_fan_on)
-        heatpump(False)
+        heatpump(True)
         display.set_status2("Heating")
 heat_governor.hb_num = 1 
 

@@ -21,6 +21,10 @@ def off_governor():
     display.set_status2("Off")
 off_governor.hb_num = 0
 
+def should_circulate_air():
+    dt = datetime.datetime.now()
+    force_fan_on = dt.minute % 10 <= 2
+
 def cool_governor():
     target_temp = get_target_temperature()
     current = temphumids.get_current_temphumid()
@@ -33,14 +37,14 @@ def cool_governor():
         fan(True)
         heatpump(True)
         display.set_status2("Cooling")
-    elif current_humidity >= target_humidity:
-        heat(False)
-        fan(False)
-        heatpump(True)
-        display.set_status2("Dehumidifying")
+    # elif current_humidity >= target_humidity:
+    #     heat(False)
+    #     fan(False)
+    #     heatpump(True)
+    #     display.set_status2("Dehumidifying")
     else:
         heat(False)
-        fan(False)
+        fan(should_circulate_air())
         heatpump(False)
         display.set_status2("Idle")
 cool_governor.hb_num = 2 
@@ -51,9 +55,7 @@ def heat_governor():
     current_temp = current['temperature']
     current_humidity = current['humidity']
     target_humidity = get_target_humidity() 
-    dt = datetime.datetime.now()
-    force_fan_on = (dt.minute >= 0 and dt.minute < 8) or (dt.minute > 30 and dt.minute < 38)
-    force_fan_on = False # for some reason the fan is just hot since Jan 1
+    force_fan_on = should_circulate_air()
     
     if current_temp >= target_temp:
         heat(False)
@@ -61,7 +63,7 @@ def heat_governor():
         heatpump(False)
         display.set_status2("Idle")
     else:
-        heat(False)
+        heat(True)
         fan(True or force_fan_on)
         heatpump(True)
         display.set_status2("Heating")

@@ -23,7 +23,8 @@ off_governor.hb_num = 0
 
 def should_circulate_air():
     dt = datetime.datetime.now()
-    force_fan_on = dt.minute % 10 <= 2
+    return dt.minute % 10 <= 2
+
 
 def cool_governor():
     target_temp = get_target_temperature()
@@ -31,7 +32,7 @@ def cool_governor():
     current_temp = current['temperature']
     current_humidity = current['humidity']
     target_humidity = get_target_humidity() 
-    
+    logger.info("target:%r, current:%r" % (target_temp, current_temp));
     if current_temp >= target_temp:
         heat(False)
         fan(True)
